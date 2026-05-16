@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaSaaS — Ship Faster. Scale Without Limits.</title>
+  <meta name="description" content="NovaSaaS is the all-in-one platform to launch, grow, and automate your SaaS product. Join 50,000+ builders shipping faster." />
+  <meta property="og:title" content="NovaSaaS — Ship Faster. Scale Without Limits." />
+  <meta property="og:description" content="The all-in-one platform for modern SaaS teams." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #04060f;
+      --bg-2:         #070b18;
+      --surface:      rgba(255,255,255,0.035);
+      --surface-hover:rgba(255,255,255,0.065);
+      --border:       rgba(0,245,212,0.12);
+      --border-hover: rgba(0,245,212,0.35);
+      --neon:         #00f5d4;
+      --neon-dim:     rgba(0,245,212,0.15);
+      --neon-glow:    rgba(0,245,212,0.4);
+      --pulse:        #6d28d9;
+      --pulse-light:  #8b5cf6;
+      --red:          #ff4d6d;
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --text-dim:     #94a3b8;
+      --font-display: 'Orbitron', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --radius:       12px;
+      --radius-lg:    20px;
+      --transition:   0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CUSTOM CURSOR ─────────────────────────────────────────── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--neon);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--neon);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+      opacity: 0.5;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* ─── NOISE OVERLAY ─────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1000; opacity: 0.4;
+    }
+
+    /* ─── SCROLLBAR ─────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background var(--transition), backdrop-filter var(--transition), padding var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(4,6,15,0.85);
+      backdrop-filter: blur(20px);
+      padding: 14px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--neon); letter-spacing: 0.05em;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-links {
+      display: flex; align-items: center; gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text-dim); text-decoration: none;
+      letter-spacing: 0.02em;
+      position: relative; padding-bottom: 4px;
+      transition: color var(--transition);
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--neon);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--neon); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-family: var(--font-display);
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--bg) !important;
+      background: var(--neon);
+      padding: 10px 24px; border-radius: 6px;
+      text-decoration: none;
+      transition: box-shadow var(--transition), transform var(--transition) !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover {
+      box-shadow: 0 0 24px var(--neon-glow);
+      transform: translateY(-1px);
+    }
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--neon); border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+    #particles-canvas {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-glow {
+      position: absolute; top: 20%; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,245,212,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow-2 {
+      position: absolute; bottom: 10%; right: 10%;
+      width: 400px; height: 300px;
+      background: radial-gradient(ellipse, rgba(109,40,217,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 860px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--neon);
+      border: 1px solid var(--border);
+      background: var(--neon-dim);
+      padding: 6px 16px; border-radius: 100px;
+      margin-bottom: 32px;
+      animation: fadeSlideDown 0.8s ease both;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--neon);
+      animation: pulse-dot 2s ease infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 12px;
+      animation: fadeSlideDown 0.9s ease 0.1s both;
+    }
+    .hero-headline .neon-word { color: var(--neon); }
+    .hero-typewriter-wrap {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--pulse-light);
+      min-height: 1.2em;
+      margin-bottom: 28px;
+      animation: fadeSlideDown 1s ease 0.2s both;
+    }
+    .hero-typewriter-wrap .caret {
+      display: inline-block;
+      width: 3px; height: 0.85em;
+      background: var(--neon);
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 0.9s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .hero-subtext {
+      font-size: 1.125rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+      max-width: 560px; margin: 0 auto 44px;
+      animation: fadeSlideDown 1s ease 0.3s both;
+    }
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; flex-wrap: wrap;
+      animation: fadeSlideDown 1s ease 0.4s both;
+    }
+    .btn-primary {
+      font-family: var(--font-display);
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--bg);
+      background: var(--neon);
+      padding: 16px 36px; border-radius: 8px;
+      text-decoration: none; border: none; cursor: none;
+      position: relative; overflow: hidden;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .btn-primary:hover { box-shadow: 0 0 40px var(--neon-glow), 0 8px 32px rgba(0,0,0,0.4); transform: translateY(-2px); }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-secondary {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 15px 32px; border-radius: 8px;
+      text-decoration: none; cursor: none;
+      backdrop-filter: blur(8px);
+      transition: border-color var(--transition), color var(--transition), background var(--transition);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+      color: var(--neon); background: var(--surface-hover);
+    }
+    .hero-note {
+      margin-top: 20px; font-size: 0.78rem;
+      color: var(--text-muted); letter-spacing: 0.02em;
+      animation: fadeSlideDown 1s ease 0.5s both;
+    }
+    .hero-scroll-hint {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fadeSlideDown 1s ease 0.8s both;
+    }
+    .scroll-mouse {
+      width: 22px; height: 36px;
+      border: 1.5px solid var(--border-hover);
+      border-radius: 11px;
+      display: flex; justify-content: center; padding-top: 6px;
+    }
+    .scroll-mouse-dot {
+      width: 3px; height: 8px;
+      background: var(--neon); border-radius: 2px;
+      animation: scroll-bounce 1.8s ease infinite;
+    }
+    @keyframes scroll-bounce {
+      0%,100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(6px); opacity: 0.4; }
+    }
+    .scroll-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; }
+
+    /* ─── SECTION BASE ───────────────────────────────────────────── */
+    section { padding: 100px 48px; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--neon); margin-bottom: 16px;
+    }
+    .section-tag::before {
+      content: ''; display: block;
+      width: 20px; height: 1px; background: var(--neon);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      line-height: 1.1; color: var(--text);
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+      max-width: 560px;
+    }
+    .text-center { text-align: center; }
+    .text-center .section-sub { margin: 0 auto; }
+    .text-center .section-tag { justify-content: center; }
+    .text-center .section-tag::before { display: none; }
+
+    /* ─── REVEAL ANIMATION ───────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ─── STATS ─────────────────────────────────────────────────── */
+    #stats {
+      padding: 60px 48px;
+      background: linear-gradient(135deg, rgba(0,245,212,0.04), rgba(109,40,217,0.04));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 40px; text-align: center;
+    }
+    .stat-item {}
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2.6rem; font-weight: 900;
+      color: var(--neon); letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--text-muted); margin-top: 8px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .stat-divider {
+      width: 1px; background: var(--border);
+      align-self: stretch;
+    }
+
+    /* ─── FEATURES ───────────────────────────────────────────────── */
+    #features { max-width: 1200px; margin: 0 auto; }
+    .features-header { max-width: 600px; margin-bottom: 64px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      position: relative; overflow: hidden;
+      backdrop-filter: blur(8px);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition), background var(--transition);
+      cursor: none;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(0,245,212,0.06), transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .feature-card:hover { border-color: var(--border-hover); box-shadow: 0 0 40px rgba(0,245,212,0.08); transform: translateY(-4px); background: var(--surface-hover); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card.large { grid-column: span 2; }
+    .feature-icon {
+      font-size: 2rem; margin-bottom: 20px;
+      display: block;
+    }
+    .feature-name {
+      font-family: var(--font-display);
+      font-size: 0.95rem; font-weight: 700;
+      letter-spacing: 0.04em; color: var(--text);
+      margin-bottom: 10px;
+    }
+    .feature-desc {
+      font-size: 0.875rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+    }
+    .feature-card .feature-tag {
+      display: inline-block; margin-top: 16px;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--neon); background: var(--neon-dim);
+      border: 1px solid rgba(0,245,212,0.2);
+      padding: 4px 10px; border-radius: 4px;
+    }
+    .feature-bg-line {
+      position: absolute; bottom: -20px; right: -20px;
+      font-family: var(--font-display); font-size: 8rem;
+      font-weight: 900; color: rgba(0,245,212,0.03);
+      letter-spacing: -0.05em; line-height: 1;
+      pointer-events: none; user-select: none;
+    }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────────────── */
+    #how { text-align: center; }
+    .how-inner { max-width: 1100px; margin: 0 auto; }
+    .how-steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 40px; margin-top: 64px; position: relative;
+    }
+    .how-steps::before {
+      content: '';
+      position: absolute; top: 40px; left: calc(16.66% + 20px); right: calc(16.66% + 20px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--neon), var(--pulse-light), var(--neon));
+      opacity: 0.3;
+    }
+    .how-step {}
+    .how-step-num {
+      width: 80px; height: 80px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
+      color: var(--neon);
+      position: relative; z-index: 1;
+      backdrop-filter: blur(8px);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .how-step:hover .how-step-num {
+      border-color: var(--neon);
+      box-shadow: 0 0 32px var(--neon-glow);
+    }
+    .how-step-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.04em; color: var(--text);
+      margin-bottom: 12px;
+    }
+    .how-step-desc {
+      font-size: 0.875rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+    }
+
+    /* ─── PRICING ────────────────────────────────────────────────── */
+    #pricing { text-align: center; }
+    .pricing-inner { max-width: 1100px; margin: 0 auto; }
+    .pricing-toggle {
+      display: inline-flex; align-items: center; gap: 12px;
+      margin: 32px auto;
+      font-size: 0.875rem; color: var(--text-dim);
+    }
+    .toggle-switch {
+      width: 48px; height: 26px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px; position: relative;
+      cursor: none; transition: background var(--transition), border-color var(--transition);
+    }
+    .toggle-switch.active { background: var(--neon-dim); border-color: var(--neon); }
+    .toggle-knob {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      background: var(--text-muted); border-radius: 50%;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .toggle-switch.active .toggle-knob { transform: translateX(22px); background: var(--neon); }
+    .toggle-save {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      background: rgba(109,40,217,0.2); color: var(--pulse-light);
+      border: 1px solid rgba(109,40,217,0.3);
+      padding: 3px 8px; border-radius: 4px; letter-spacing: 0.1em;
+    }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px; margin-top: 24px; align-items: start;
+    }
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      text-align: left; position: relative;
+      backdrop-filter: blur(8px);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .pricing-card:hover { transform: translateY(-4px); }
+    .pricing-card.recommended {
+      border-color: var(--neon);
+      box-shadow: 0 0 60px rgba(0,245,212,0.12);
+    }
+    .pricing-card.recommended:hover { box-shadow: 0 0 80px rgba(0,245,212,0.2); }
+    .recommended-badge {
+      position: absolute; top: -14px; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--neon); color: var(--bg);
+      padding: 4px 14px; border-radius: 100px; white-space: nowrap;
+    }
+    .pricing-tier {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 20px;
+    }
+    .pricing-price {
+      display: flex; align-items: flex-start; gap: 4px;
+      margin-bottom: 8px;
+    }
+    .price-currency { font-size: 1.2rem; color: var(--text-dim); margin-top: 10px; }
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: 3.5rem; font-weight: 900; line-height: 1;
+      color: var(--text); transition: all 0.4s ease;
+    }
+    .price-amount.neon { color: var(--neon); }
+    .price-period { font-size: 0.8rem; color: var(--text-muted); align-self: flex-end; margin-bottom: 8px; }
+    .pricing-desc {
+      font-size: 0.8rem; font-weight: 300;
+      color: var(--text-dim); margin-bottom: 28px; line-height: 1.6;
+    }
+    .pricing-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .pricing-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.875rem; font-weight: 300; color: var(--text-dim);
+    }
+    .pricing-features li .check {
+      color: var(--neon); font-size: 0.9rem; flex-shrink: 0;
+    }
+    .pricing-features li .cross { color: var(--text-muted); font-size: 0.9rem; flex-shrink: 0; }
+    .pricing-btn {
+      display: block; width: 100%; margin-top: 32px;
+      padding: 14px; border-radius: 8px;
+      font-family: var(--font-display); font-size: 0.75rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      transition: box-shadow var(--transition), background var(--transition), transform var(--transition);
+      cursor: none;
+    }
+    .pricing-btn.outline {
+      border: 1px solid var(--border); color: var(--text-dim);
+      background: transparent;
+    }
+    .pricing-btn.outline:hover { border-color: var(--border-hover); color: var(--neon); }
+    .pricing-btn.solid {
+      background: var(--neon); color: var(--bg); border: none;
+    }
+    .pricing-btn.solid:hover { box-shadow: 0 0 32px var(--neon-glow); transform: translateY(-2px); }
+
+    /* ─── TESTIMONIALS ───────────────────────────────────────────── */
+    #testimonials { padding: 80px 0; overflow: hidden; }
+    .testimonials-header { text-align: center; padding: 0 48px; margin-bottom: 56px; }
+    .marquee-wrap { position: relative; }
+    .marquee-wrap::before, .marquee-wrap::after {
+      content: '';
+      position: absolute; top: 0; bottom: 0; width: 200px; z-index: 2;
+    }
+    .marquee-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+    .marquee-wrap::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+    .marquee-track {
+      display: flex; gap: 20px; width: max-content;
+      animation: marquee 40s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .testi-card {
+      flex-shrink: 0; width: 320px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(8px);
+    }
+    .testi-stars { color: var(--neon); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 16px; }
+    .testi-quote {
+      font-size: 0.875rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon), var(--pulse-light));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 0.7rem;
+      font-weight: 700; color: var(--bg); flex-shrink: 0;
+    }
+    .testi-name { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+    .testi-role { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ─── CTA BANNER ─────────────────────────────────────────────── */
+    #cta-banner {
+      padding: 100px 48px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta-banner::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 800px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,245,212,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-banner-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+    .cta-banner-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900; letter-spacing: -0.02em;
+      color: var(--text); line-height: 1.1; margin-bottom: 16px;
+    }
+    .cta-banner-title span { color: var(--neon); }
+    .cta-banner-sub {
+      font-size: 1rem; font-weight: 300;
+      color: var(--text-dim); margin-bottom: 40px;
+    }
+    .cta-inline-form {
+      display: flex; gap: 12px; max-width: 480px; margin: 0 auto;
+    }
+    .cta-inline-input {
+      flex: 1; padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: var(--font-body); font-size: 0.875rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .cta-inline-input::placeholder { color: var(--text-muted); }
+    .cta-inline-input:focus { border-color: var(--neon); box-shadow: 0 0 20px var(--neon-dim); }
+    .cta-inline-btn {
+      font-family: var(--font-display); font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--bg); background: var(--neon);
+      padding: 14px 28px; border-radius: 8px;
+      border: none; cursor: none; white-space: nowrap;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .cta-inline-btn:hover { box-shadow: 0 0 32px var(--neon-glow); transform: translateY(-2px); }
+    .cta-terms { margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 56px 48px 36px;
+    }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand-desc {
+      font-size: 0.8rem; font-weight: 300;
+      color: var(--text-muted); line-height: 1.7; margin-top: 12px; max-width: 220px;
+    }
+    .footer-col-title {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 16px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 0.8rem; color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--neon); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-copy { font-size: 0.75rem; color: var(--text-muted); }
+    .footer-socials { display: flex; gap: 16px; }
+    .footer-socials a {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
+      transition: border-color var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+    .footer-socials a:hover {
+      border-color: var(--neon); color: var(--neon);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────────────── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MOBILE RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .feature-card.large { grid-column: span 1; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column; gap: 0;
+        position: fixed; top: 0; left: 0; right: 0;
+        background: rgba(4,6,15,0.98);
+        backdrop-filter: blur(20px);
+        padding: 80px 32px 40px;
+        border-bottom: 1px solid var(--border);
+        z-index: 899;
+      }
+      .nav-links.open li { border-bottom: 1px solid var(--border); }
+      .nav-links.open a { display: block; padding: 16px 0; font-size: 1rem; }
+      .nav-hamburger { display: flex; }
+      section { padding: 72px 24px; }
+      #stats { padding: 48px 24px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-divider { display: none; }
+      .features-grid, .how-steps, .pricing-grid { grid-template-columns: 1fr; }
+      .how-steps::before { display: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+      footer { padding: 48px 24px 28px; }
+      .cta-inline-form { flex-direction: column; }
+      .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">⚡ Nova<span>SaaS</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="signup.html" class="nav-cta">Get Early Access</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <canvas id="particles-canvas"></canvas>
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Now in Public Beta &nbsp;·&nbsp; 50,000+ Builders
+      </div>
+      <h1 class="hero-headline">The Platform Built for<br><span class="neon-word">Modern SaaS</span></h1>
+      <div class="hero-typewriter-wrap">
+        <span id="typewriter-text"></span><span class="caret"></span>
+      </div>
+      <p class="hero-subtext">
+        NovaSaaS gives your team every tool to launch, grow, and automate —
+        with zero infrastructure headaches and maximum conversion.
+      </p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn-primary">Start for Free →</a>
+        <a href="#how" class="btn-secondary">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          See How It Works
+        </a>
+      </div>
+      <p class="hero-note">No credit card required &nbsp;·&nbsp; Free forever plan &nbsp;·&nbsp; 2-minute setup</p>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-mouse"><div class="scroll-mouse-dot"></div></div>
+      <span class="scroll-label">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ─── STATS ─────────────────────────────────────────────────────── -->
+  <div id="stats">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-value" data-target="50000" data-suffix="K+">0</div>
+        <div class="stat-label">Active Builders</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-value" data-target="99.9" data-suffix="%" data-decimals="1">0</div>
+        <div class="stat-label">Uptime SLA</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-value" data-target="200" data-suffix="+">0</div>
+        <div class="stat-label">Integrations</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-value" data-target="4.9" data-suffix="★" data-decimals="1">0</div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FEATURES ─────────────────────────────────────────────────── -->
+  <section>
+    <div id="features" style="max-width:1200px;margin:0 auto;">
+      <div class="features-header">
+        <div class="section-tag reveal">Features</div>
+        <h2 class="section-title reveal reveal-delay-1">Everything you need.<br>Nothing you don't.</h2>
+        <p class="section-sub reveal reveal-delay-2">A unified workspace replacing 12+ tools. Ship products, not integrations.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card large reveal" data-mouse-glow>
+          <span class="feature-icon">⚡</span>
+          <div class="feature-name">Lightning Infrastructure</div>
+          <div class="feature-desc">Auto-scaling infrastructure that handles 10x traffic spikes without a single config file. CDN, caching, and edge deployment — all automated from day one.</div>
+          <span class="feature-tag">Core</span>
+          <div class="feature-bg-line">INF</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-1" data-mouse-glow>
+          <span class="feature-icon">🔐</span>
+          <div class="feature-name">Auth & Security</div>
+          <div class="feature-desc">OAuth, magic links, MFA, and SOC 2-compliant data handling — shipped in minutes.</div>
+          <span class="feature-tag">Security</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-1" data-mouse-glow>
+          <span class="feature-icon">📊</span>
+          <div class="feature-name">Real-Time Analytics</div>
+          <div class="feature-desc">Live dashboards with cohort analysis, funnel tracking, and revenue metrics.</div>
+          <span class="feature-tag">Analytics</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-2" data-mouse-glow>
+          <span class="feature-icon">🤖</span>
+          <div class="feature-name">AI-Powered Automation</div>
+          <div class="feature-desc">Build smart workflows that auto-respond, segment, and convert — no code needed.</div>
+          <span class="feature-tag">AI</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-2" data-mouse-glow>
+          <span class="feature-icon">💳</span>
+          <div class="feature-name">Billing & Subscriptions</div>
+          <div class="feature-desc">Stripe-native billing with usage metering, trials, and dunning automation.</div>
+          <span class="feature-tag">Revenue</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-3" data-mouse-glow>
+          <span class="feature-icon">🔗</span>
+          <div class="feature-name">200+ Integrations</div>
+          <div class="feature-desc">Connect Slack, HubSpot, Intercom, and 197 more in one click.</div>
+          <span class="feature-tag">Ecosystem</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HOW IT WORKS ─────────────────────────────────────────────── -->
+  <section id="how">
+    <div class="how-inner">
+      <div class="section-tag reveal">Process</div>
+      <h2 class="section-title reveal reveal-delay-1">Live in three steps</h2>
+      <p class="section-sub reveal reveal-delay-2">From sign-up to production in under 10 minutes. We're serious.</p>
+      <div class="how-steps">
+        <div class="how-step reveal">
+          <div class="how-step-num">01</div>
+          <div class="how-step-title">Create Your Account</div>
+          <div class="how-step-desc">Sign up free. Verify your email. Your workspace is provisioned instantly — no waiting, no forms, no calls with sales.</div>
+        </div>
+        <div class="how-step reveal reveal-delay-2">
+          <div class="how-step-num">02</div>
+          <div class="how-step-title">Connect & Configure</div>
+          <div class="how-step-desc">Link your domain, connect your tools, and configure your stack through a guided onboarding — no CLI required.</div>
+        </div>
+        <div class="how-step reveal reveal-delay-4">
+          <div class="how-step-num">03</div>
+          <div class="how-step-title">Ship & Scale</div>
+          <div class="how-step-desc">Deploy with one click. Watch your metrics climb in real time. Scale automatically as your users multiply.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PRICING ───────────────────────────────────────────────────── -->
+  <section id="pricing">
+    <div class="pricing-inner">
+      <div class="section-tag reveal">Pricing</div>
+      <h2 class="section-title reveal reveal-delay-1">Honest pricing.<br>No surprises.</h2>
+      <div class="pricing-toggle reveal reveal-delay-2">
+        <span>Monthly</span>
+        <div class="toggle-switch" id="billing-toggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span>Annual</span>
+        <span class="toggle-save">Save 20%</span>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="pricing-card reveal">
+          <div class="pricing-tier">Starter</div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount" data-monthly="0" data-annual="0">0</span>
+            <span class="price-period">/mo</span>
+          </div>
+          <div class="pricing-desc">Perfect for solo builders and early experiments.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> 3 Projects</li>
+            <li><span class="check">✓</span> 1,000 Monthly Active Users</li>
+            <li><span class="check">✓</span> Basic Analytics</li>
+            <li><span class="check">✓</span> Community Support</li>
+            <li><span class="cross">✗</span> Custom Domain</li>
+            <li><span class="cross">✗</span> AI Automation</li>
+          </ul>
+          <a href="signup.html" class="pricing-btn outline">Get Started Free</a>
+        </div>
+        <!-- Pro (Recommended) -->
+        <div class="pricing-card recommended reveal reveal-delay-2">
+          <div class="recommended-badge">Most Popular</div>
+          <div class="pricing-tier">Pro</div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount neon" data-monthly="49" data-annual="39">49</span>
+            <span class="price-period">/mo</span>
+          </div>
+          <div class="pricing-desc">For growing teams ready to scale fast.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Unlimited Projects</li>
+            <li><span class="check">✓</span> 50,000 Monthly Active Users</li>
+            <li><span class="check">✓</span> Advanced Analytics + Funnels</li>
+            <li><span class="check">✓</span> Priority Support</li>
+            <li><span class="check">✓</span> Custom Domain</li>
+            <li><span class="check">✓</span> AI Automation (50 flows)</li>
+          </ul>
+          <a href="signup.html" class="pricing-btn solid">Start Pro Trial</a>
+        </div>
+        <!-- Enterprise -->
+        <div class="pricing-card reveal reveal-delay-4">
+          <div class="pricing-tier">Enterprise</div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount" data-monthly="199" data-annual="159">199</span>
+            <span class="price-period">/mo</span>
+          </div>
+          <div class="pricing-desc">For teams shipping at serious scale.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Everything in Pro</li>
+            <li><span class="check">✓</span> Unlimited MAUs</li>
+            <li><span class="check">✓</span> SOC 2 Compliance</li>
+            <li><span class="check">✓</span> Dedicated Slack Support</li>
+            <li><span class="check">✓</span> SLA Guarantee</li>
+            <li><span class="check">✓</span> Unlimited AI Automation</li>
+          </ul>
+          <a href="signup.html" class="pricing-btn outline">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TESTIMONIALS ─────────────────────────────────────────────── -->
+  <section id="testimonials">
+    <div class="testimonials-header">
+      <div class="section-tag reveal">Reviews</div>
+      <h2 class="section-title reveal reveal-delay-1">Loved by builders worldwide</h2>
+    </div>
+    <div class="marquee-wrap">
+      <div class="marquee-track" id="marquee-track">
+        <!-- Cards duplicated for infinite loop via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CTA BANNER ───────────────────────────────────────────────── -->
+  <section id="cta-banner">
+    <div class="cta-banner-inner">
+      <h2 class="cta-banner-title reveal">Ready to <span>ship faster</span><br>than everyone else?</h2>
+      <p class="cta-banner-sub reveal reveal-delay-1">Join 50,000+ builders already using NovaSaaS. Start free, no card required.</p>
+      <div class="cta-inline-form reveal reveal-delay-2">
+        <input type="email" class="cta-inline-input" placeholder="your@email.com" id="cta-email-input" autocomplete="email" />
+        <button class="cta-inline-btn" id="cta-submit-btn" onclick="handleCtaSubmit()">Launch →</button>
+      </div>
+      <p class="cta-terms reveal reveal-delay-3">By signing up you agree to our <a href="#" style="color:var(--text-muted);">Terms</a> and <a href="#" style="color:var(--text-muted);">Privacy Policy</a>.</p>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ───────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <a href="index.html" class="nav-logo" style="font-size:1.1rem;">⚡ Nova<span>SaaS</span></a>
+          <p class="footer-brand-desc">The all-in-one SaaS platform for modern teams. Built with neon dreams and async/await.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Product</div>
+          <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Company</div>
+          <ul class="footer-links">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press Kit</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Legal</div>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2026 NovaSaaS Inc. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="GitHub">⌥</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="Discord">◈</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ──────────────────────────────────────────────────── -->
+  <script>
+    /* ── CURSOR ── */
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animateCursor() {
+      rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a,button,[data-mouse-glow]').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='56px'; ring.style.height='56px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+    });
+
+    /* ── NAV SCROLL ── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    /* ── HAMBURGER ── */
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      const spans = hamburger.querySelectorAll('span');
+      if (navLinks.classList.contains('open')) {
+        spans[0].style.transform = 'rotate(45deg) translate(5px,5px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
+      } else {
+        spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+      }
+    });
+
+    /* ── PARTICLES CANVAS ── */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [], W, H, mouse = {x: -999, y: -999};
+
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+    resize();
+
+    function initParticles() {
+      const count = window.innerWidth < 768 ? 50 : 100;
+      particles = Array.from({length: count}, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 0.5,
+        alpha: Math.random() * 0.5 + 0.2
+      }));
+    }
+    initParticles();
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+    });
+    canvas.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) { p.vx += dx/dist * 0.08; p.vy += dy/dist * 0.08; }
+        p.vx *= 0.99; p.vy *= 0.99;
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,245,212,${p.alpha})`;
+        ctx.fill();
+      });
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i+1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const d = Math.sqrt(dx*dx+dy*dy);
+          if (d < 100) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0,245,212,${0.12*(1-d/100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    /* ── TYPEWRITER ── */
+    const phrases = ['Ship Faster Than Ever.','Scale Without Limits.','Convert More Leads.','Automate Everything.'];
+    let pi = 0, ci = 0, deleting = false, tw = document.getElementById('typewriter-text');
+    function type() {
+      const phrase = phrases[pi];
+      if (!deleting) {
+        tw.textContent = phrase.slice(0, ++ci);
+        if (ci === phrase.length) { deleting = true; setTimeout(type, 2200); return; }
+      } else {
+        tw.textContent = phrase.slice(0, --ci);
+        if (ci === 0) { deleting = false; pi = (pi+1)%phrases.length; setTimeout(type, 400); return; }
+      }
+      setTimeout(type, deleting ? 45 : 80);
+    }
+    setTimeout(type, 1200);
+
+    /* ── SCROLL REVEAL ── */
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    /* ── STATS COUNTER ── */
+    function easeOut(t) { return 1 - Math.pow(1-t, 3); }
+    const statEls = document.querySelectorAll('.stat-value[data-target]');
+    const statObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const target = parseFloat(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        const decimals = parseInt(el.dataset.decimals || '0');
+        const duration = 2000; const start = performance.now();
+        function update(now) {
+          const t = Math.min((now - start) / duration, 1);
+          const val = easeOut(t) * target;
+          el.textContent = (decimals ? val.toFixed(decimals) : Math.floor(val).toLocaleString()) + suffix;
+          if (t < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+        statObs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    statEls.forEach(el => statObs.observe(el));
+
+    /* ── PRICING TOGGLE ── */
+    const toggle = document.getElementById('billing-toggle');
+    let annual = false;
+    toggle.addEventListener('click', () => {
+      annual = !annual;
+      toggle.classList.toggle('active', annual);
+      document.querySelectorAll('.price-amount[data-monthly]').forEach(el => {
+        const val = annual ? el.dataset.annual : el.dataset.monthly;
+        el.textContent = val;
+      });
+    });
+
+    /* ── FEATURE CARD MOUSE GLOW ── */
+    document.querySelectorAll('[data-mouse-glow]').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
+
+    /* ── TESTIMONIALS MARQUEE ── */
+    const testimonials = [
+      {quote:"NovaSaaS cut our infra setup time from 3 weeks to 2 hours. We shipped our MVP in a single sprint.",name:"Priya K.",role:"CTO @ Launchpad",init:"PK"},
+      {quote:"The analytics alone are worth it. Real-time cohort data changed how we think about retention.",name:"Marcus T.",role:"Founder @ Loopify",init:"MT"},
+      {quote:"We replaced 8 tools with NovaSaaS. The team was skeptical. Now they won't go back.",name:"Sarah L.",role:"Head of Product @ Stackr",init:"SL"},
+      {quote:"Billing automation saved us 20 hours a month. The dunning flows work like magic.",name:"Ahmed R.",role:"CEO @ Gridline",init:"AR"},
+      {quote:"Onboarding took 9 minutes. I timed it. The docs are the best I've seen in SaaS.",name:"Yuki M.",role:"Engineer @ Driftwave",init:"YM"},
+      {quote:"We went from 0 to 10,000 users in 6 weeks. NovaSaaS scaled without a hiccup.",name:"Elena V.",role:"Co-Founder @ Vortex",init:"EV"},
+    ];
+    const track = document.getElementById('marquee-track');
+    const allCards = [...testimonials, ...testimonials];
+    allCards.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'testi-card';
+      card.innerHTML = `<div class="testi-stars">★★★★★</div><p class="testi-quote">"${t.quote}"</p><div class="testi-author"><div class="testi-avatar">${t.init}</div><div><div class="testi-name">${t.name}</div><div class="testi-role">${t.role}</div></div></div>`;
+      track.appendChild(card);
+    });
+
+    /* ── CTA FORM REDIRECT ── */
+    function handleCtaSubmit() {
+      const email = document.getElementById('cta-email-input').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('cta-email-input').style.borderColor = '#ff4d6d';
+        return;
+      }
+      window.location.href = `signup.html?email=${encodeURIComponent(email)}`;
+    }
+    document.getElementById('cta-email-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleCtaSubmit();
+      e.target.style.borderColor = '';
+    });
+  </script>
+</body>
+</html>
