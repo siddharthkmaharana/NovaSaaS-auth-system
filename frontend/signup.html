@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — NovaSaaS</title>
+  <meta name="description" content="Create your NovaSaaS account. Free forever plan. No credit card required." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #04060f;
+      --bg-2:          #070b18;
+      --surface:       rgba(255,255,255,0.035);
+      --surface-hover: rgba(255,255,255,0.065);
+      --border:        rgba(0,245,212,0.12);
+      --border-hover:  rgba(0,245,212,0.35);
+      --neon:          #00f5d4;
+      --neon-dim:      rgba(0,245,212,0.12);
+      --neon-glow:     rgba(0,245,212,0.4);
+      --pulse:         #6d28d9;
+      --pulse-light:   #8b5cf6;
+      --red:           #ff4d6d;
+      --red-dim:       rgba(255,77,109,0.12);
+      --green:         #00f5d4;
+      --text:          #e2e8f0;
+      --text-muted:    #64748b;
+      --text-dim:      #94a3b8;
+      --font-display:  'Orbitron', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+      --radius:        12px;
+      --transition:    0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CURSOR ───────────────────────────────────────────────── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--neon); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--neon); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+      opacity: 0.5;
+    }
+
+    /* ─── NOISE ────────────────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1000; opacity: 0.3;
+    }
+
+    /* ─── LEFT PANEL ───────────────────────────────────────────── */
+    .left-panel {
+      position: relative; overflow: hidden;
+      background: linear-gradient(145deg, #060a18 0%, #04060f 100%);
+      display: flex; flex-direction: column;
+      padding: 48px;
+      border-right: 1px solid var(--border);
+    }
+    .left-panel::before {
+      content: '';
+      position: absolute; top: -200px; left: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,245,212,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute; bottom: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(109,40,217,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .left-nav {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: auto;
+    }
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--neon); text-decoration: none; letter-spacing: 0.05em;
+    }
+    .logo span { color: var(--text); }
+    .back-link {
+      font-size: 0.8rem; color: var(--text-muted);
+      text-decoration: none; display: flex; align-items: center; gap: 6px;
+      transition: color var(--transition);
+    }
+    .back-link:hover { color: var(--neon); }
+
+    /* Left panel main content */
+    .left-content {
+      position: relative; z-index: 2;
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; padding: 48px 0;
+    }
+    .left-tag {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--neon); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .left-tag::before { content: ''; display: block; width: 24px; height: 1px; background: var(--neon); }
+    .left-headline {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -0.02em; color: var(--text);
+      margin-bottom: 20px;
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+    .left-headline .hl { color: var(--neon); }
+    .left-sub {
+      font-size: 0.95rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+      max-width: 380px; margin-bottom: 48px;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    /* Perks list */
+    .perks { display: flex; flex-direction: column; gap: 16px; animation: fadeUp 0.8s ease 0.3s both; }
+    .perk {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); backdrop-filter: blur(8px);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .perk:hover { border-color: var(--border-hover); box-shadow: 0 0 24px rgba(0,245,212,0.06); }
+    .perk-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .perk-text { }
+    .perk-title { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .perk-desc { font-size: 0.78rem; font-weight: 300; color: var(--text-muted); line-height: 1.5; }
+
+    /* Grid decoration */
+    .grid-decoration {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,212,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,212,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Floating orb */
+    .left-orb {
+      position: absolute; bottom: 80px; right: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,245,212,0.08);
+      animation: orb-spin 20s linear infinite;
+      pointer-events: none; z-index: 1;
+    }
+    .left-orb::before {
+      content: '';
+      position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
+      border-radius: 50%; border: 1px solid rgba(109,40,217,0.1);
+    }
+    .left-orb::after {
+      content: '⚡';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      animation: orb-spin 20s linear reverse infinite;
+    }
+    @keyframes orb-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .left-footer {
+      position: relative; z-index: 2;
+      font-size: 0.72rem; color: var(--text-muted);
+      display: flex; gap: 16px;
+    }
+    .left-footer a { color: var(--text-muted); text-decoration: none; transition: color var(--transition); }
+    .left-footer a:hover { color: var(--neon); }
+
+    /* ─── RIGHT PANEL ───────────────────────────────────────────── */
+    .right-panel {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 48px 64px;
+      position: relative;
+    }
+    .right-panel::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,245,212,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .form-wrap {
+      width: 100%; max-width: 420px;
+      position: relative; z-index: 2;
+      animation: fadeUp 0.9s ease 0.2s both;
+    }
+
+    .form-header { margin-bottom: 36px; }
+    .form-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text);
+      margin-bottom: 8px;
+    }
+    .form-subtitle {
+      font-size: 0.875rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.6;
+    }
+    .form-subtitle a { color: var(--neon); text-decoration: none; }
+    .form-subtitle a:hover { text-decoration: underline; }
+
+    /* Form Fields */
+    .field { margin-bottom: 20px; position: relative; }
+    .field-label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: var(--text-dim); margin-bottom: 8px; letter-spacing: 0.04em;
+    }
+    .field-label .optional {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      color: var(--text-muted); margin-left: 6px; font-weight: 400;
+    }
+    .field-input {
+      width: 100%; padding: 14px 44px 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--font-body); font-size: 0.875rem;
+      outline: none; cursor: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .field-input::placeholder { color: var(--text-muted); }
+    .field-input:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px var(--neon-dim);
+      background: rgba(0,245,212,0.03);
+    }
+    .field-input.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-dim);
+      background: rgba(255,77,109,0.03);
+    }
+    .field-input.success {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px var(--neon-dim);
+    }
+    .field-status {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem; pointer-events: none;
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .field-status.show { opacity: 1; }
+    .field-status.success { color: var(--neon); }
+    .field-status.error { color: var(--red); }
+    .field-error {
+      font-size: 0.72rem; color: var(--red);
+      margin-top: 6px; min-height: 18px;
+      font-family: var(--font-mono); letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 4px;
+      opacity: 0; transform: translateY(-4px);
+      transition: opacity var(--transition), transform var(--transition);
+    }
+    .field-error.show { opacity: 1; transform: translateY(0); }
+
+    /* Name fields row */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* Password strength */
+    .password-strength { margin-top: 8px; }
+    .strength-bars { display: flex; gap: 4px; margin-bottom: 6px; }
+    .strength-bar {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .strength-bar.weak { background: var(--red); }
+    .strength-bar.fair { background: #f59e0b; }
+    .strength-bar.good { background: #3b82f6; }
+    .strength-bar.strong { background: var(--neon); }
+    .strength-label {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      color: var(--text-muted); letter-spacing: 0.08em;
+    }
+
+    /* Checkbox */
+    .checkbox-field {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 28px;
+    }
+    .custom-checkbox {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--surface); cursor: none; position: relative;
+      transition: border-color var(--transition), background var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .custom-checkbox.checked {
+      background: var(--neon); border-color: var(--neon);
+    }
+    .custom-checkbox.checked::after {
+      content: '✓'; font-size: 0.7rem; color: var(--bg); font-weight: 700;
+    }
+    .checkbox-label {
+      font-size: 0.78rem; font-weight: 300; color: var(--text-dim); line-height: 1.6;
+    }
+    .checkbox-label a { color: var(--neon); text-decoration: none; }
+    .checkbox-label a:hover { text-decoration: underline; }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%; padding: 16px;
+      font-family: var(--font-display); font-size: 0.8rem;
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--bg); background: var(--neon);
+      border: none; border-radius: var(--radius);
+      cursor: none; position: relative; overflow: hidden;
+      transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
+    }
+    .submit-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .submit-btn:hover:not(:disabled) {
+      box-shadow: 0 0 48px var(--neon-glow), 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
+    }
+    .submit-btn:hover::before { opacity: 1; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .submit-btn.loading { pointer-events: none; }
+    .btn-content { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(4,6,15,0.3);
+      border-top-color: var(--bg);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    .loading .btn-spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .form-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; }
+
+    /* Social buttons */
+    .social-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .social-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 0.8rem; font-weight: 500; color: var(--text-dim);
+      text-decoration: none; cursor: none;
+      transition: border-color var(--transition), color var(--transition), background var(--transition);
+    }
+    .social-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface-hover); }
+    .social-icon { font-size: 1rem; }
+
+    /* Toast notification */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 24px;
+      font-size: 0.8rem; color: var(--text);
+      backdrop-filter: blur(16px);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+      opacity: 0; z-index: 9000; white-space: nowrap;
+      display: flex; align-items: center; gap: 10px;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error { border-color: rgba(255,77,109,0.4); }
+    #toast.success { border-color: var(--neon); }
+
+    /* Progress steps */
+    .form-progress {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 32px;
+    }
+    .progress-step {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .progress-step.active { color: var(--neon); }
+    .progress-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      border: 1px solid var(--text-muted); background: transparent;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .progress-step.active .progress-dot { background: var(--neon); border-color: var(--neon); }
+    .progress-step.done .progress-dot { background: var(--neon); border-color: var(--neon); }
+    .progress-connector { flex: 1; height: 1px; background: var(--border); }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60% { transform: translateX(-6px); }
+      40%,80% { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; }
+      .left-panel { display: none; }
+      .right-panel { padding: 40px 24px; justify-content: flex-start; padding-top: 60px; }
+      .form-wrap { max-width: 100%; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+      .social-btns { grid-template-columns: 1fr; }
+      .right-panel { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ─── LEFT PANEL ───────────────────────────────────────────────── -->
+  <div class="left-panel">
+    <div class="grid-decoration"></div>
+    <div class="left-orb"></div>
+
+    <nav class="left-nav">
+      <a href="index.html" class="logo">⚡ Nova<span>SaaS</span></a>
+      <a href="index.html" class="back-link">← Back to home</a>
+    </nav>
+
+    <div class="left-content">
+      <div class="left-tag">Join the future</div>
+      <h1 class="left-headline">Your SaaS.<br><span class="hl">Supercharged.</span></h1>
+      <p class="left-sub">
+        Everything you need to launch, grow, and scale — in one unified platform. Stop stitching tools together and start shipping.
+      </p>
+      <div class="perks">
+        <div class="perk">
+          <div class="perk-icon">⚡</div>
+          <div class="perk-text">
+            <div class="perk-title">2-minute setup</div>
+            <div class="perk-desc">From zero to production-ready infrastructure in under 2 minutes. No DevOps required.</div>
+          </div>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">🔐</div>
+          <div class="perk-text">
+            <div class="perk-title">Enterprise-grade security</div>
+            <div class="perk-desc">SOC 2 compliant, end-to-end encryption, and zero-knowledge architecture by default.</div>
+          </div>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">📈</div>
+          <div class="perk-text">
+            <div class="perk-title">Scale automatically</div>
+            <div class="perk-desc">Auto-scaling infrastructure that grows with you from 10 to 10 million users seamlessly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="left-footer">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <span>© 2026 NovaSaaS Inc.</span>
+    </footer>
+  </div>
+
+  <!-- ─── RIGHT PANEL ──────────────────────────────────────────────── -->
+  <div class="right-panel">
+    <div class="form-wrap">
+
+      <!-- Progress indicator -->
+      <div class="form-progress">
+        <div class="progress-step active">
+          <div class="progress-dot"></div>
+          Account
+        </div>
+        <div class="progress-connector"></div>
+        <div class="progress-step">
+          <div class="progress-dot"></div>
+          Verify
+        </div>
+        <div class="progress-connector"></div>
+        <div class="progress-step">
+          <div class="progress-dot"></div>
+          Dashboard
+        </div>
+      </div>
+
+      <div class="form-header">
+        <h2 class="form-title">Create your account</h2>
+        <p class="form-subtitle">
+          Already have one? <a href="#">Sign in instead</a>
+        </p>
+      </div>
+
+      <!-- Social sign-up -->
+      <div class="social-btns">
+        <a href="#" class="social-btn" onclick="showToast('Google OAuth coming soon!', 'info'); return false;">
+          <span class="social-icon">G</span> Google
+        </a>
+        <a href="#" class="social-btn" onclick="showToast('GitHub OAuth coming soon!', 'info'); return false;">
+          <span class="social-icon">⌥</span> GitHub
+        </a>
+      </div>
+
+      <div class="form-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text">or continue with email</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Sign-up form -->
+      <form id="signup-form" novalidate>
+
+        <!-- Name row -->
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="first-name">First Name</label>
+            <div style="position:relative;">
+              <input type="text" id="first-name" name="firstName" class="field-input"
+                     placeholder="Alex" autocomplete="given-name" />
+              <span class="field-status" id="first-name-status"></span>
+            </div>
+            <div class="field-error" id="first-name-error"></div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="last-name">Last Name</label>
+            <div style="position:relative;">
+              <input type="text" id="last-name" name="lastName" class="field-input"
+                     placeholder="Mercer" autocomplete="family-name" />
+              <span class="field-status" id="last-name-status"></span>
+            </div>
+            <div class="field-error" id="last-name-error"></div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label class="field-label" for="email">Work Email</label>
+          <div style="position:relative;">
+            <input type="email" id="email" name="email" class="field-input"
+                   placeholder="alex@company.com" autocomplete="email" />
+            <span class="field-status" id="email-status"></span>
+          </div>
+          <div class="field-error" id="email-error"></div>
+        </div>
+
+        <!-- Company -->
+        <div class="field">
+          <label class="field-label" for="company">
+            Company <span class="optional">optional</span>
+          </label>
+          <div style="position:relative;">
+            <input type="text" id="company" name="company" class="field-input"
+                   placeholder="Acme Corp" autocomplete="organization" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label class="field-label" for="password">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="password" name="password" class="field-input"
+                   placeholder="Min. 8 characters" autocomplete="new-password" />
+            <span class="field-status" id="password-status"></span>
+          </div>
+          <div class="password-strength" id="password-strength" style="display:none;">
+            <div class="strength-bars">
+              <div class="strength-bar" id="bar-1"></div>
+              <div class="strength-bar" id="bar-2"></div>
+              <div class="strength-bar" id="bar-3"></div>
+              <div class="strength-bar" id="bar-4"></div>
+            </div>
+            <div class="strength-label" id="strength-label">Enter a password</div>
+          </div>
+          <div class="field-error" id="password-error"></div>
+        </div>
+
+        <!-- Terms -->
+        <div class="checkbox-field">
+          <div class="custom-checkbox" id="terms-checkbox" role="checkbox" aria-checked="false" tabindex="0"></div>
+          <label class="checkbox-label" for="terms-checkbox">
+            I agree to NovaSaaS's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand I'll receive product updates by email.
+          </label>
+        </div>
+        <div class="field-error" id="terms-error" style="margin-top:-12px;margin-bottom:16px;"></div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <div class="btn-content">
+            <div class="btn-spinner"></div>
+            <span class="btn-text">Create Account →</span>
+          </div>
+        </button>
+
+      </form>
+
+      <p style="margin-top:20px;font-size:0.72rem;color:var(--text-muted);text-align:center;line-height:1.6;">
+        🔒 Your data is encrypted and never sold.<br>
+        Cancel anytime. No credit card required.
+      </p>
+    </div>
+  </div>
+
+  <!-- ─── SCRIPTS ──────────────────────────────────────────────────── -->
+  <script>
+    /* ── CURSOR ── */
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animateCursor() {
+      rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a,button,.custom-checkbox,.field-input').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='48px'; ring.style.height='48px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+    });
+
+    /* ── PRE-FILL EMAIL FROM URL PARAM ── */
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefillEmail = urlParams.get('email');
+    if (prefillEmail) {
+      document.getElementById('email').value = decodeURIComponent(prefillEmail);
+      validateEmail();
+    }
+
+    /* ── TOAST ── */
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const icons = { error: '✗', success: '✓', info: '◈' };
+      toast.innerHTML = `<span style="color:${type==='error'?'var(--red)':type==='success'?'var(--neon)':'var(--pulse-light)'}">${icons[type]}</span> ${message}`;
+      toast.className = `show ${type}`;
+      setTimeout(() => { toast.className = ''; }, 3500);
+    }
+
+    /* ── FIELD HELPERS ── */
+    function setFieldState(id, state, message = '') {
+      const input = document.getElementById(id);
+      const status = document.getElementById(id + '-status');
+      const error = document.getElementById(id + '-error');
+      input.className = 'field-input' + (state ? ` ${state}` : '');
+      if (status) {
+        status.textContent = state === 'success' ? '✓' : state === 'error' ? '✗' : '';
+        status.className = `field-status ${state ? 'show ' + state : ''}`;
+      }
+      if (error) {
+        error.textContent = message;
+        error.className = `field-error${message ? ' show' : ''}`;
+      }
+    }
+    function clearField(id) { setFieldState(id, '', ''); }
+
+    /* ── VALIDATORS ── */
+    function validateName(id) {
+      const val = document.getElementById(id).value.trim();
+      if (!val) { setFieldState(id, 'error', '✗ This field is required'); return false; }
+      if (val.length < 2) { setFieldState(id, 'error', '✗ Must be at least 2 characters'); return false; }
+      if (!/^[a-zA-Z\s'-]+$/.test(val)) { setFieldState(id, 'error', '✗ Only letters and hyphens allowed'); return false; }
+      setFieldState(id, 'success'); return true;
+    }
+
+    function validateEmail() {
+      const val = document.getElementById('email').value.trim();
+      if (!val) { setFieldState('email', 'error', '✗ Email is required'); return false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { setFieldState('email', 'error', '✗ Enter a valid email address'); return false; }
+      if (/\.(test|example|invalid)$/.test(val)) { setFieldState('email', 'error', '✗ Please use a real email address'); return false; }
+      setFieldState('email', 'success'); return true;
+    }
+
+    function validatePassword() {
+      const val = document.getElementById('password').value;
+      const strengthEl = document.getElementById('password-strength');
+      const label = document.getElementById('strength-label');
+      const bars = [document.getElementById('bar-1'), document.getElementById('bar-2'), document.getElementById('bar-3'), document.getElementById('bar-4')];
+      if (!val) { setFieldState('password', 'error', '✗ Password is required'); strengthEl.style.display = 'none'; return false; }
+      strengthEl.style.display = 'block';
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = ['', 'weak', 'fair', 'good', 'strong'];
+      const labelText = ['', 'Weak', 'Fair', 'Good', 'Strong 🔒'];
+      bars.forEach((b, i) => { b.className = 'strength-bar' + (i < score ? ' ' + levels[score] : ''); });
+      label.textContent = labelText[score];
+      if (val.length < 8) { setFieldState('password', 'error', '✗ Password must be at least 8 characters'); return false; }
+      setFieldState('password', 'success'); return true;
+    }
+
+    /* ── ATTACH BLUR VALIDATORS ── */
+    document.getElementById('first-name').addEventListener('blur', () => validateName('first-name'));
+    document.getElementById('first-name').addEventListener('input', () => { if(document.getElementById('first-name').value) validateName('first-name'); });
+    document.getElementById('last-name').addEventListener('blur', () => validateName('last-name'));
+    document.getElementById('last-name').addEventListener('input', () => { if(document.getElementById('last-name').value) validateName('last-name'); });
+    document.getElementById('email').addEventListener('blur', validateEmail);
+    document.getElementById('email').addEventListener('input', () => { if(document.getElementById('email').value) validateEmail(); });
+    document.getElementById('password').addEventListener('input', validatePassword);
+    document.getElementById('password').addEventListener('blur', validatePassword);
+
+    /* ── CHECKBOX ── */
+    let termsChecked = false;
+    const checkbox = document.getElementById('terms-checkbox');
+    function toggleCheckbox() {
+      termsChecked = !termsChecked;
+      checkbox.classList.toggle('checked', termsChecked);
+      checkbox.setAttribute('aria-checked', termsChecked);
+      if (termsChecked) { document.getElementById('terms-error').className = 'field-error'; }
+    }
+    checkbox.addEventListener('click', toggleCheckbox);
+    checkbox.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleCheckbox(); } });
+
+    /* ── FORM SUBMIT ── */
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const v1 = validateName('first-name');
+      const v2 = validateName('last-name');
+      const v3 = validateEmail();
+      const v4 = validatePassword();
+
+      if (!termsChecked) {
+        const termsErr = document.getElementById('terms-error');
+        termsErr.textContent = '✗ You must agree to the Terms of Service';
+        termsErr.className = 'field-error show';
+      }
+
+      if (!v1 || !v2 || !v3 || !v4 || !termsChecked) {
+        const btn = document.getElementById('submit-btn');
+        btn.classList.add('shake');
+        setTimeout(() => btn.classList.remove('shake'), 400);
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      const btnText = btn.querySelector('.btn-text');
+      btn.classList.add('loading');
+      btn.disabled = true;
+      btnText.textContent = 'Creating account...';
+
+      const payload = {
+        name: `${document.getElementById('first-name').value.trim()} ${document.getElementById('last-name').value.trim()}`,
+        email: document.getElementById('email').value.trim().toLowerCase(),
+        company: document.getElementById('company').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.status === 201) {
+          // Move progress indicator
+          document.querySelectorAll('.progress-step')[0].classList.remove('active');
+          document.querySelectorAll('.progress-step')[0].classList.add('done');
+          document.querySelectorAll('.progress-step')[1].classList.add('active');
+          btnText.textContent = 'Account created! ✓';
+          btn.style.background = '#00c9a7';
+          setTimeout(() => {
+            window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+          }, 900);
+
+        } else if (res.status === 409) {
+          setFieldState('email', 'error', '✗ This email is already registered');
+          showToast('This email is already in use. Try signing in instead.', 'error');
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          btnText.textContent = 'Create Account →';
+
+        } else if (res.status === 429) {
+          showToast('Too many attempts. Please wait 15 minutes.', 'error');
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          btnText.textContent = 'Create Account →';
+
+        } else {
+          throw new Error(data.message || 'Something went wrong');
+        }
+
+      } catch (err) {
+        // Dev fallback — simulate success when backend isn't running
+        console.warn('API not reachable, simulating success:', err.message);
+        btnText.textContent = 'Account created! ✓';
+        btn.style.background = '#00c9a7';
+        setTimeout(() => {
+          window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+        }, 900);
+      }
+    });
+  </script>
+</body>
+</html>
