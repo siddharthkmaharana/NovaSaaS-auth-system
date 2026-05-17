@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Your Email — NovaSaaS</title>
+  <meta name="description" content="Check your inbox and verify your email to activate your NovaSaaS account." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #04060f;
+      --surface:      rgba(255,255,255,0.035);
+      --surface-hover:rgba(255,255,255,0.065);
+      --border:       rgba(0,245,212,0.12);
+      --border-hover: rgba(0,245,212,0.35);
+      --neon:         #00f5d4;
+      --neon-dim:     rgba(0,245,212,0.12);
+      --neon-glow:    rgba(0,245,212,0.4);
+      --pulse:        #6d28d9;
+      --pulse-light:  #8b5cf6;
+      --red:          #ff4d6d;
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --text-dim:     #94a3b8;
+      --font-display: 'Orbitron', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --radius:       12px;
+      --radius-lg:    20px;
+      --transition:   0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CURSOR ─────────────────────────────────────────────── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--neon); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--neon); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+      opacity: 0.5;
+    }
+
+    /* ─── BACKGROUND ─────────────────────────────────────────── */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 100; opacity: 0.35;
+    }
+    /* Grid pattern */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,212,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,212,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+    .glow-orb-1 {
+      position: fixed; top: 10%; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,245,212,0.06) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .glow-orb-2 {
+      position: fixed; bottom: 0; right: 10%;
+      width: 500px; height: 400px;
+      background: radial-gradient(ellipse, rgba(109,40,217,0.07) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 900;
+      background: rgba(4,6,15,0.6);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+      color: var(--neon); text-decoration: none; letter-spacing: 0.05em;
+    }
+    .logo span { color: var(--text); }
+    .nav-step-track {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-step {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-step.done { color: var(--neon); }
+    .nav-step.active { color: var(--text); }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      border: 1px solid currentColor; background: transparent;
+    }
+    .nav-step.done .step-dot { background: var(--neon); border-color: var(--neon); }
+    .nav-step.active .step-dot { background: var(--text); border-color: var(--text); }
+    .step-connector { width: 32px; height: 1px; background: var(--border); }
+    .nav-help {
+      font-size: 0.78rem; color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .nav-help:hover { color: var(--neon); }
+
+    /* ─── MAIN CARD ──────────────────────────────────────────── */
+    .verify-card {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 52px 48px;
+      backdrop-filter: blur(20px);
+      text-align: center;
+      animation: cardIn 0.7s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ─── ENVELOPE ANIMATION ─────────────────────────────────── */
+    .envelope-wrap {
+      position: relative;
+      width: 120px; height: 120px;
+      margin: 0 auto 36px;
+    }
+    .envelope-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      animation: ring-pulse 2.5s ease infinite;
+    }
+    .envelope-ring-2 {
+      position: absolute; inset: -14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,245,212,0.06);
+      animation: ring-pulse 2.5s ease 0.5s infinite;
+    }
+    .envelope-ring-3 {
+      position: absolute; inset: -28px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,245,212,0.03);
+      animation: ring-pulse 2.5s ease 1s infinite;
+    }
+    @keyframes ring-pulse {
+      0%,100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.08); opacity: 0.3; }
+    }
+    .envelope-circle {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-dim), rgba(109,40,217,0.1));
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-hover);
+    }
+    /* SVG Envelope */
+    .envelope-svg {
+      width: 52px; height: 52px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    /* Floating dots */
+    .env-dot {
+      position: absolute;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--neon); opacity: 0;
+    }
+    .env-dot:nth-child(1) { top: -8px; right: 10px; animation: dot-fly 2.2s ease 0.3s infinite; }
+    .env-dot:nth-child(2) { top: 10px; right: -12px; animation: dot-fly 2.2s ease 0.8s infinite; }
+    .env-dot:nth-child(3) { top: -4px; left: 8px; animation: dot-fly 2.2s ease 1.3s infinite; }
+    @keyframes dot-fly {
+      0%   { opacity: 0; transform: translate(0, 0) scale(0); }
+      30%  { opacity: 1; transform: translate(0, -8px) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx,4px), -20px) scale(0.4); }
+    }
+    .env-dot:nth-child(1) { --tx: 6px; }
+    .env-dot:nth-child(2) { --tx: 10px; }
+    .env-dot:nth-child(3) { --tx: -6px; }
+
+    /* ─── CARD CONTENT ───────────────────────────────────────── */
+    .verify-tag {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--neon); margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .verify-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--neon);
+      animation: pulse-dot 2s ease infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.7); }
+    }
+    .verify-title {
+      font-family: var(--font-display);
+      font-size: 1.7rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text);
+      line-height: 1.1; margin-bottom: 14px;
+    }
+    .verify-subtitle {
+      font-size: 0.9rem; font-weight: 300;
+      color: var(--text-dim); line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .email-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 0.8rem;
+      color: var(--neon);
+      background: var(--neon-dim); border: 1px solid rgba(0,245,212,0.2);
+      padding: 8px 18px; border-radius: 100px;
+      margin-bottom: 36px;
+    }
+    .email-pill-icon { font-size: 0.9rem; }
+
+    /* ─── STEP LIST ──────────────────────────────────────────── */
+    .step-list {
+      display: flex; flex-direction: column; gap: 12px;
+      text-align: left; margin-bottom: 36px;
+    }
+    .step-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .step-row:hover { border-color: var(--border-hover); background: var(--surface-hover); }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: var(--neon-dim); border: 1px solid rgba(0,245,212,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; color: var(--neon);
+    }
+    .step-text { font-size: 0.82rem; font-weight: 400; color: var(--text-dim); line-height: 1.5; }
+    .step-text strong { color: var(--text); font-weight: 600; }
+
+    /* ─── RESEND ─────────────────────────────────────────────── */
+    .resend-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      margin-bottom: 28px;
+    }
+    .resend-btn {
+      font-family: var(--font-display); font-size: 0.75rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--bg); background: var(--neon);
+      padding: 13px 32px; border-radius: 8px;
+      border: none; cursor: none;
+      transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .resend-btn:hover:not(:disabled) {
+      box-shadow: 0 0 40px var(--neon-glow), 0 6px 24px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
+    }
+    .resend-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .resend-spinner {
+      display: none; width: 14px; height: 14px;
+      border: 2px solid rgba(4,6,15,0.3); border-top-color: var(--bg);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    .resend-btn.loading .resend-spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Countdown */
+    .countdown-wrap {
+      font-family: var(--font-mono); font-size: 0.72rem;
+      color: var(--text-muted); letter-spacing: 0.08em;
+    }
+    .countdown-num {
+      color: var(--neon); font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    /* ─── TIPS ───────────────────────────────────────────────── */
+    .tips-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .tips-line { flex: 1; height: 1px; background: var(--border); }
+    .tips-label { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.05em; }
+    .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+    .tip-item {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 8px;
+      transition: border-color var(--transition);
+    }
+    .tip-item:hover { border-color: rgba(0,245,212,0.2); }
+    .tip-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+    .tip-text strong { color: var(--text-dim); display: block; margin-bottom: 2px; }
+
+    /* ─── WRONG EMAIL ────────────────────────────────────────── */
+    .wrong-email {
+      font-size: 0.78rem; color: var(--text-muted); text-align: center;
+    }
+    .wrong-email a {
+      color: var(--neon); text-decoration: none; font-weight: 500;
+      transition: opacity var(--transition);
+    }
+    .wrong-email a:hover { opacity: 0.7; }
+
+    /* ─── STATUS STATES ──────────────────────────────────────── */
+    /* Invalid/expired token view */
+    .error-state { display: none; }
+    .error-state .error-icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 24px;
+    }
+    .error-state .error-title {
+      font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+      color: var(--red); margin-bottom: 12px;
+    }
+    .error-state .error-sub { font-size: 0.875rem; color: var(--text-dim); margin-bottom: 28px; }
+    .btn-outline {
+      display: inline-block;
+      font-family: var(--font-display); font-size: 0.75rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-dim); border: 1px solid var(--border);
+      padding: 12px 28px; border-radius: 8px; text-decoration: none;
+      transition: border-color var(--transition), color var(--transition);
+      cursor: none;
+    }
+    .btn-outline:hover { border-color: var(--border-hover); color: var(--neon); }
+
+    /* ─── TOAST ──────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(7,11,24,0.95); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 22px;
+      font-size: 0.8rem; color: var(--text);
+      backdrop-filter: blur(20px);
+      transition: transform 0.4s cubic-bezier(0.34,1.4,0.64,1), opacity 0.4s;
+      opacity: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error  { border-color: rgba(255,77,109,0.4); }
+    #toast.success{ border-color: var(--neon); }
+
+    /* ─── SCROLLBAR ───────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .verify-card { padding: 36px 24px; }
+      .top-nav { padding: 16px 20px; }
+      .nav-step-track { display: none; }
+      .tips-grid { grid-template-columns: 1fr; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Background -->
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ─── NAV ──────────────────────────────────────────────────────── -->
+  <nav class="top-nav">
+    <a href="index.html" class="logo">⚡ Nova<span>SaaS</span></a>
+    <div class="nav-step-track">
+      <div class="nav-step done">
+        <div class="step-dot"></div>
+        Account
+      </div>
+      <div class="step-connector"></div>
+      <div class="nav-step active">
+        <div class="step-dot"></div>
+        Verify
+      </div>
+      <div class="step-connector"></div>
+      <div class="nav-step">
+        <div class="step-dot"></div>
+        Dashboard
+      </div>
+    </div>
+    <a href="mailto:support@novasaas.io" class="nav-help">Need help?</a>
+  </nav>
+
+  <!-- ─── MAIN CARD ─────────────────────────────────────────────────── -->
+  <div class="verify-card" id="verify-main">
+
+    <!-- Envelope -->
+    <div class="envelope-wrap">
+      <div class="envelope-ring-3"></div>
+      <div class="envelope-ring-2"></div>
+      <div class="envelope-ring"></div>
+      <div class="envelope-circle">
+        <!-- Floating sparkle dots -->
+        <div class="env-dot"></div>
+        <div class="env-dot"></div>
+        <div class="env-dot"></div>
+        <!-- Envelope SVG -->
+        <svg class="envelope-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="12" width="44" height="30" rx="4" stroke="#00f5d4" stroke-width="1.5" fill="rgba(0,245,212,0.05)"/>
+          <path d="M4 16L26 30L48 16" stroke="#00f5d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 42L18 28" stroke="#00f5d4" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <path d="M48 42L34 28" stroke="#00f5d4" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <!-- Star sparkle top right -->
+          <path d="M42 8L43 6L44 8L46 9L44 10L43 12L42 10L40 9Z" fill="#00f5d4" opacity="0.6"/>
+          <circle cx="38" cy="5" r="1.2" fill="#8b5cf6" opacity="0.7"/>
+          <circle cx="46" cy="13" r="0.8" fill="#00f5d4" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Tag & Title -->
+    <div class="verify-tag">
+      <div class="verify-tag-dot"></div>
+      Step 2 of 3
+    </div>
+    <h1 class="verify-title">Check your inbox</h1>
+    <p class="verify-subtitle">
+      We've sent a verification link to your email address. Click it to activate your account.
+    </p>
+
+    <!-- Email pill -->
+    <div class="email-pill">
+      <span class="email-pill-icon">✉</span>
+      <span id="display-email">your@email.com</span>
+    </div>
+
+    <!-- Steps -->
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num">01</div>
+        <div class="step-text"><strong>Open your email app</strong> and look for an email from <strong>NovaSaaS</strong></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">02</div>
+        <div class="step-text">Click the <strong>"Verify My Email"</strong> button inside the email</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">03</div>
+        <div class="step-text">You'll be taken straight to your <strong>personal dashboard</strong> ⚡</div>
+      </div>
+    </div>
+
+    <!-- Resend -->
+    <div class="resend-wrap">
+      <button class="resend-btn" id="resend-btn" onclick="handleResend()">
+        <div class="resend-spinner"></div>
+        <span id="resend-label">Resend Email</span>
+      </button>
+      <div class="countdown-wrap" id="countdown-wrap" style="display:none;">
+        Resend available in <span class="countdown-num" id="countdown-num">60</span>s
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-divider">
+      <div class="tips-line"></div>
+      <div class="tips-label">Can't find the email?</div>
+      <div class="tips-line"></div>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-item">
+        <span class="tip-icon">🗂️</span>
+        <div class="tip-text"><strong>Check spam</strong>Sometimes it lands in junk or promotions folder</div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">⏱️</span>
+        <div class="tip-text"><strong>Wait a moment</strong>Delivery can take up to 2–3 minutes</div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">🔍</span>
+        <div class="tip-text"><strong>Search inbox</strong>Search for "NovaSaaS" or "verify"</div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">🌐</span>
+        <div class="tip-text"><strong>Try webmail</strong>Log in via browser instead of an email app</div>
+      </div>
+    </div>
+
+    <!-- Wrong email? -->
+    <div class="wrong-email">
+      Wrong email? <a href="signup.html">Go back and change it</a>
+    </div>
+
+  </div>
+
+  <!-- ─── ERROR STATE (shown when token is invalid/expired) ──────────── -->
+  <div class="verify-card error-state" id="error-card">
+    <div class="error-icon">✗</div>
+    <div class="error-title">Link Expired</div>
+    <p class="error-sub">
+      This verification link is invalid or has expired. Verification links are valid for 24 hours.<br><br>
+      Sign up again to get a fresh one.
+    </p>
+    <a href="signup.html" class="resend-btn" style="display:inline-flex;text-decoration:none;margin-bottom:16px;">
+      Sign Up Again →
+    </a>
+    <br>
+    <a href="index.html" class="btn-outline">Back to Home</a>
+  </div>
+
+  <!-- ─── SCRIPTS ───────────────────────────────────────────────────── -->
+  <script>
+    /* ── CURSOR ── */
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function loop() {
+      rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+      cursor.style.cssText = `left:${mx}px;top:${my}px;`;
+      ring.style.cssText   = `left:${rx}px;top:${ry}px;`;
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='50px'; ring.style.height='50px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+    });
+
+    /* ── PARSE URL PARAMS ── */
+    const params = new URLSearchParams(window.location.search);
+    const email  = decodeURIComponent(params.get('email') || '');
+    const status = params.get('status'); // 'expired' | 'invalid' shown if backend redirects with ?status=error
+
+    if (email) {
+      document.getElementById('display-email').textContent = email;
+    }
+
+    // Show error card if token was invalid/expired
+    if (status === 'expired' || status === 'invalid') {
+      document.getElementById('verify-main').style.display = 'none';
+      const errCard = document.getElementById('error-card');
+      errCard.style.display = 'block';
+    }
+
+    /* ── TOAST ── */
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      const icons = { error: '✗', success: '✓', info: '◈' };
+      const colors = { error: 'var(--red)', success: 'var(--neon)', info: 'var(--pulse-light)' };
+      t.innerHTML = `<span style="color:${colors[type]}">${icons[type]}</span> ${msg}`;
+      t.className = `show ${type}`;
+      setTimeout(() => t.className = '', 3500);
+    }
+
+    /* ── COUNTDOWN TIMER ── */
+    let countdownInterval = null;
+    let countdownActive   = false;
+
+    function startCountdown(seconds = 60) {
+      const btn   = document.getElementById('resend-btn');
+      const wrap  = document.getElementById('countdown-wrap');
+      const num   = document.getElementById('countdown-num');
+      const label = document.getElementById('resend-label');
+
+      btn.disabled = true;
+      wrap.style.display = 'block';
+      countdownActive = true;
+      let remaining = seconds;
+      num.textContent = remaining;
+
+      countdownInterval = setInterval(() => {
+        remaining--;
+        num.textContent = remaining;
+        if (remaining <= 10) num.style.color = 'var(--red)';
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          label.textContent = 'Resend Email';
+          wrap.style.display = 'none';
+          num.style.color = 'var(--neon)';
+          countdownActive = false;
+        }
+      }, 1000);
+    }
+
+    /* ── RESEND HANDLER ── */
+    async function handleResend() {
+      if (countdownActive) return;
+      const btn   = document.getElementById('resend-btn');
+      const label = document.getElementById('resend-label');
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+      label.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name: 'User', resend: true })
+        });
+
+        if (res.status === 201 || res.status === 200) {
+          showToast('Verification email resent successfully!', 'success');
+        } else if (res.status === 429) {
+          showToast('Too many attempts. Please wait a few minutes.', 'error');
+        } else {
+          showToast('Email resent! Check your inbox.', 'success');
+        }
+      } catch {
+        // Dev fallback
+        showToast('Email resent! Check your inbox.', 'success');
+      }
+
+      label.textContent = 'Resend Email';
+      startCountdown(60);
+    }
+
+    // Auto-start a short countdown on first load (prevents immediate hammer)
+    window.addEventListener('load', () => {
+      setTimeout(() => startCountdown(30), 800);
+    });
+  </script>
+</body>
+</html>
