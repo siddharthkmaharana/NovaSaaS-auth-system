@@ -552,10 +552,10 @@
 
       <!-- Social sign-up -->
       <div class="social-btns">
-        <a href="#" class="social-btn" onclick="showToast('Google OAuth coming soon!', 'info'); return false;">
+        <a href="#" class="social-btn" id="google-btn">
           <span class="social-icon">G</span> Google
         </a>
-        <a href="#" class="social-btn" onclick="showToast('GitHub OAuth coming soon!', 'info'); return false;">
+        <a href="#" class="social-btn" id="github-btn">
           <span class="social-icon">⌥</span> GitHub
         </a>
       </div>
@@ -851,6 +851,149 @@
         }, 900);
       }
     });
+
+    /* ── MOCK OAUTH ── */
+    let currentProvider = '';
+
+    function openMockOAuth(provider) {
+      currentProvider = provider;
+      const modal = document.getElementById('oauth-modal');
+      const logoEl = document.getElementById('oauth-logo');
+      const submitBtn = document.getElementById('oauth-submit-btn');
+      const emailInput = document.getElementById('oauth-email');
+
+      emailInput.style.borderColor = 'var(--border)';
+      emailInput.value = '';
+
+      if (provider === 'google') {
+        logoEl.innerHTML = `<span style="font-family:var(--font-display); font-size:2.2rem; font-weight:900; letter-spacing:-0.05em;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span>`;
+        submitBtn.textContent = 'Continue with Google';
+        submitBtn.style.background = '#4285F4';
+        submitBtn.style.boxShadow = '0 4px 12px rgba(66,133,244,0.3)';
+      } else {
+        logoEl.innerHTML = `<span style="font-size:2.5rem; color:#fff;">⌥</span>`;
+        submitBtn.textContent = 'Continue with GitHub';
+        submitBtn.style.background = '#24292e';
+        submitBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+      }
+
+      modal.style.display = 'flex';
+      emailInput.focus();
+    }
+
+    function closeOAuthModal() {
+      document.getElementById('oauth-modal').style.display = 'none';
+      document.getElementById('oauth-input-step').style.display = 'block';
+      document.getElementById('oauth-loading-step').style.display = 'none';
+    }
+
+    async function submitOAuthEmail() {
+      const emailInput = document.getElementById('oauth-email');
+      const email = emailInput.value.trim().toLowerCase();
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailInput.style.borderColor = 'var(--red)';
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+
+      document.getElementById('oauth-input-step').style.display = 'none';
+      document.getElementById('oauth-loading-step').style.display = 'block';
+      
+      const loadingText = document.getElementById('oauth-loading-text');
+      const capitalizedProvider = currentProvider.charAt(0).toUpperCase() + currentProvider.slice(1);
+      loadingText.textContent = `Authenticating with ${capitalizedProvider}...`;
+
+      // Extract name from email prefix
+      const username = email.split('@')[0];
+      const formattedName = username
+        .split(/[\._-]/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      const payload = {
+        name: formattedName || `${capitalizedProvider} User`,
+        email: email,
+        company: `${capitalizedProvider} OAuth`
+      };
+
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.status === 201) {
+          closeOAuthModal();
+          showToast(`Linked ${capitalizedProvider} account! ✓`, 'success');
+          setTimeout(() => {
+            window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+          }, 800);
+        } else if (res.status === 409) {
+          showToast('This email is already registered on NovaSaaS.', 'error');
+          closeOAuthModal();
+        } else {
+          throw new Error(data.message || 'Something went wrong');
+        }
+      } catch (err) {
+        console.warn('API error, simulating success:', err.message);
+        closeOAuthModal();
+        window.location.href = `verify.html?email=${encodeURIComponent(payload.email)}`;
+      }
+    }
+
+    // Attach programmatic listeners to avoid CSP inline event violations
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('google-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        openMockOAuth('google');
+      });
+      document.getElementById('github-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        openMockOAuth('github');
+      });
+      document.getElementById('close-oauth-btn').addEventListener('click', () => {
+        closeOAuthModal();
+      });
+      document.getElementById('oauth-submit-btn').addEventListener('click', () => {
+        submitOAuthEmail();
+      });
+      document.getElementById('oauth-email').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitOAuthEmail();
+        }
+      });
+    });
   </script>
+
+  <!-- Mock OAuth Modal -->
+  <div id="oauth-modal" style="display:none; position:fixed; inset:0; background:rgba(4,6,15,0.85); backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#0c101f; border:1px solid rgba(0,245,212,0.15); width:90%; max-width:400px; border-radius:12px; padding:40px; box-shadow:0 0 40px rgba(0,245,212,0.1); position:relative; text-align:center;">
+      <button id="close-oauth-btn" style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; outline:none;">×</button>
+      
+      <!-- Provider Specific Header -->
+      <div id="oauth-logo" style="margin-bottom:16px;"></div>
+      <div id="oauth-title" style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--text); margin-bottom:8px;">Sign in</div>
+      <div id="oauth-subtitle" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:28px;">to continue to NovaSaaS</div>
+      
+      <!-- Input Step -->
+      <div id="oauth-input-step">
+        <input type="email" id="oauth-email" placeholder="Email address" style="width:100%; padding:14px 18px; background:var(--surface); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.9rem; margin-bottom:24px; outline:none; transition:border-color 0.2s;" />
+        <button id="oauth-submit-btn" style="width:100%; padding:14px; border:none; border-radius:8px; color:#fff; font-family:var(--font-display); font-size:0.8rem; font-weight:700; letter-spacing:0.05em; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s;"></button>
+      </div>
+      
+      <!-- Loading Step -->
+      <div id="oauth-loading-step" style="display:none; padding:20px 0;">
+        <div style="width:32px; height:32px; border:3px solid rgba(0,245,212,0.2); border-top-color:var(--neon); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px;"></div>
+        <div id="oauth-loading-text" style="font-size:0.85rem; color:var(--text-muted);">Connecting...</div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

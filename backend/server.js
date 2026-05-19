@@ -98,6 +98,7 @@ app.use(
                     'https://fonts.googleapis.com',
                     'https://cdn.jsdelivr.net',  /* canvas-confetti CDN                 */
                 ],
+                scriptSrcAttr: ["'unsafe-inline'"],
                 styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
                 fontSrc: ["'self'", 'https://fonts.gstatic.com'],
                 imgSrc: ["'self'", 'data:', 'https:'],
@@ -204,7 +205,7 @@ app.use(
 );
 
 /* SPA fallback — all non-API, non-static routes serve index.html */
-app.get('*', (req, res, next) => {
+app.get(/.*/, (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
